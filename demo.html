@@ -4,33 +4,107 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Public and Private Key Demonstration</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.8;
+            background: #f7f7f7;
+            color: #333;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #4caf50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        p {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            resize: none;
+            font-size: 1rem;
+            box-shadow: inset 0px 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        textarea:focus {
+            border-color: #4caf50;
+            outline: none;
+            box-shadow: 0px 0px 8px rgba(76, 175, 80, 0.5);
+        }
+
+        button {
+            background: linear-gradient(145deg, #4caf50, #3e8e41);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .message-box {
+            background: #e9f5ee;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            word-wrap: break-word;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            textarea {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="products.html">Products</a>
-            <a href="contact.html">Contact</a>
-            <a href="demo.html">Encryption Demo</a>
-        </nav>
-    </header>
-    <main>
-        <h1>Public and Private Key Encryption Demo</h1>
-        <p>Enter a message below to see how it can be encrypted with a public key and decrypted with a private key:</p>
-        <textarea id="messageInput" rows="5" cols="50" placeholder="Type your message here..."></textarea><br><br>
-        <button id="generateKeys">Generate Keys</button>
-        <button id="encrypt">Encrypt</button>
-        <button id="decrypt">Decrypt</button>
-        <h3>Original Message:</h3>
-        <p id="originalMessage"></p>
-        <h3>Encrypted Message:</h3>
-        <p id="encryptedMessage"></p>
-        <h3>Decrypted Message:</h3>
-        <p id="decryptedMessage"></p>
-    </main>
+    <h1>Public and Private Key Encryption Demo</h1>
+    <p>Enter a message below to see how it can be encrypted with a public key and decrypted with a private key:</p>
+    <textarea id="messageInput" rows="5" cols="50" placeholder="Type your message here..."></textarea><br><br>
+    <button id="generateKeys">Generate Keys</button>
+    <button id="encrypt">Encrypt</button>
+    <button id="decrypt">Decrypt</button>
+    <h3>Original Message:</h3>
+    <p id="originalMessage" class="message-box"></p>
+    <h3>Encrypted Message:</h3>
+    <p id="encryptedMessage" class="message-box"></p>
+    <h3>Decrypted Message:</h3>
+    <p id="decryptedMessage" class="message-box"></p>
     <script>
         let publicKey, privateKey;
+
         async function generateKeys() {
             const keyPair = await window.crypto.subtle.generateKey(
                 {
@@ -46,6 +120,7 @@
             privateKey = keyPair.privateKey;
             alert("Keys generated successfully!");
         }
+
         async function encryptMessage() {
             const message = document.getElementById("messageInput").value;
             if (!message) {
@@ -63,6 +138,7 @@
             document.getElementById("originalMessage").textContent = message;
             document.getElementById("encryptedMessage").textContent = new Uint8Array(encryptedMessage);
         }
+
         async function decryptMessage() {
             const encryptedMessage = document.getElementById("encryptedMessage").textContent;
             if (!encryptedMessage) {
@@ -81,6 +157,7 @@
             );
             document.getElementById("decryptedMessage").textContent = new TextDecoder().decode(decryptedMessage);
         }
+
         document.getElementById("generateKeys").addEventListener("click", generateKeys);
         document.getElementById("encrypt").addEventListener("click", encryptMessage);
         document.getElementById("decrypt").addEventListener("click", decryptMessage);
