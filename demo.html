@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Public and Private Key Demonstration</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="products.html">Products</a>
+            <a href="contact.html">Contact</a>
+            <a href="demo.html">Encryption Demo</a>
+        </nav>
+    </header>
+    <main>
+        <h1>Public and Private Key Encryption Demo</h1>
+        <p>Enter a message below to see how it can be encrypted with a public key and decrypted with a private key:</p>
+        <textarea id="messageInput" rows="5" cols="50" placeholder="Type your message here..."></textarea><br><br>
+        <button id="generateKeys">Generate Keys</button>
+        <button id="encrypt">Encrypt</button>
+        <button id="decrypt">Decrypt</button>
+        <h3>Original Message:</h3>
+        <p id="originalMessage"></p>
+        <h3>Encrypted Message:</h3>
+        <p id="encryptedMessage"></p>
+        <h3>Decrypted Message:</h3>
+        <p id="decryptedMessage"></p>
+    </main>
+    <script>
+        let publicKey, privateKey;
+        async function generateKeys() {
+            const keyPair = await window.crypto.subtle.generateKey(
+                {
+                    name: "RSA-OAEP",
+                    modulusLength: 2048,
+                    publicExponent: new Uint8Array([1, 0, 1]),
+                    hash: "SHA-256",
+                },
+                true,
+                ["encrypt", "decrypt"]
+            );
+            publicKey = keyPair.publicKey;
+            privateKey = keyPair.privateKey;
+            alert("Keys generated successfully!");
+        }
+        async function encryptMessage() {
+            const message = document.getElementById("messageInput").value;
+            if (!message) {
+                alert("Please enter a message!");
+                return;
+            }
+            const encodedMessage = new TextEncoder().encode(message);
+            const encryptedMessage = await window.crypto.subtle.encrypt(
+                {
+                    name: "RSA-OAEP",
+                },
+                publicKey,
+                encodedMessage
+            );
+            document.getElementById("originalMessage").textContent = message;
+            document.getElementById("encryptedMessage").textContent = new Uint8Array(encryptedMessage);
+        }
+        async function decryptMessage() {
+            const encryptedMessage = document.getElementById("encryptedMessage").textContent;
+            if (!encryptedMessage) {
+                alert("No encrypted message to decrypt!");
+                return;
+            }
+            const encryptedMessageBuffer = new Uint8Array(
+                encryptedMessage.split(",").map(Number)
+            ).buffer;
+            const decryptedMessage = await window.crypto.subtle.decrypt(
+                {
+                    name: "RSA-OAEP",
+                },
+                privateKey,
+                encryptedMessageBuffer
+            );
+            document.getElementById("decryptedMessage").textContent = new TextDecoder().decode(decryptedMessage);
+        }
+        document.getElementById("generateKeys").addEventListener("click", generateKeys);
+        document.getElementById("encrypt").addEventListener("click", encryptMessage);
+        document.getElementById("decrypt").addEventListener("click", decryptMessage);
+    </script>
+</body>
+</html>
